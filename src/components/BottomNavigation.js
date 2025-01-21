@@ -6,7 +6,6 @@ const BottomNav = forwardRef((props, ref) => {
 
   useEffect(() => {
     ref.current.ownerDocument.body.scrollTop = 0;
-    // setMessages(refreshMessages());
   }, [value, ref]);
 
   return (
