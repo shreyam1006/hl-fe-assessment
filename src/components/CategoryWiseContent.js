@@ -1,17 +1,38 @@
 import React, { useState } from "react";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import SearchIcon from "@mui/icons-material/Search";
+import { Tabs, Tab, Box, styled, Typography } from "@mui/material";
+import InventoryCard from "./InventoryCard";
+import { useSelector } from "react-redux";
+import { selectInventory } from "../features/inventorySlice";
 
-const cardStyle = {
-  backgroundColor: "white",
-  padding: "20px",
-  borderRadius: "8px",
-  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  transition: "transform 0.2s ease",
-  cursor: "pointer",
-  "&:hover": {
-    transform: "translateY(-5px)",
+const StyledTabs = styled(Tabs)({
+  "& .MuiTabs-indicator": {
+    display: "none",
   },
-};
+  minHeight: "unset",
+  "& .MuiTabs-flexContainer": {
+    gap: "16px",
+  },
+});
+
+const StyledTab = styled(Tab)({
+  textTransform: "none",
+  fontSize: "12px",
+  color: "#616161",
+  minHeight: "unset",
+  padding: "0",
+  minWidth: "unset",
+  "&.Mui-selected": {
+    color: BLUE_COLOR,
+    fontWeight: 700,
+    fontSize: "14px",
+    "& .MuiTypography-root": {
+      color: BLUE_COLOR,
+      fontSize: "10px",
+    },
+  },
+});
 
 const CategoryWiseContent = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,156 +42,122 @@ const CategoryWiseContent = () => {
   };
   const [activeTab, setActiveTab] = useState("All");
 
+  const inventory = useSelector(selectInventory);
   const categories = [
-    "All",
-    "Electrical Appliances",
-    "Furniture",
-    "Home Decor",
+    { name: "All", count: inventory.All.length },
+    {
+      name: "Electrical Appliances",
+      count: inventory["Electrical Appliances"].length,
+    },
+    { name: "Furniture", count: inventory.Furniture.length },
+    { name: "Home Decor", count: inventory["Home Decor"].length },
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       {/* Search Input */}
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "20px", position: "relative" }}>
+        <SearchIcon
+          style={{
+            position: "absolute",
+            right: "24px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: "#666",
+            zIndex: 1,
+          }}
+        />
         <input
           type="text"
-          placeholder="Search items..."
+          placeholder="Search for items"
           value={searchQuery}
           onChange={handleSearch}
           style={{
-            width: "100%",
+            width: "76%",
             padding: "12px",
-            fontSize: "16px",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
+            paddingRight: "40px",
+            paddingLeft: "15px",
+            fontSize: "12px",
+            border: "1px solid #C3C3C3",
+            borderRadius: "10px",
             outline: "none",
+            marginLeft: "16px",
+            marginRight: "16px",
           }}
         />
       </div>
 
       {/* Category Tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          overflowX: "auto",
-          paddingBottom: "10px",
-        }}
-      >
-        {categories.map((category) => (
-          <button
-            key={category}
-            onClick={() => setActiveTab(category)}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "20px",
-              cursor: "pointer",
-              backgroundColor: activeTab === category ? BLUE_COLOR : "#f0f0f0",
-              color: activeTab === category ? "white" : "black",
-              whiteSpace: "nowrap",
-              transition: "all 0.3s ease",
-            }}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
+      <Box sx={{ mb: 3, pl: 2 }}>
+        <StyledTabs
+          value={activeTab}
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          variant="scrollable"
+          scrollButtons={false}
+        >
+          {categories.map((category) => (
+            <StyledTab
+              key={category.name}
+              value={category.name}
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  {category.name}
+                  {category.count && (
+                    <Typography
+                      component="span"
+                      sx={{
+                        color: "#000000",
+                        fontSize: "8px",
+                        fontWeight: 700,
+                        borderRadius: "20px",
+                        background: "#F5F5F5",
+                        p: "3.5px",
+                      }}
+                    >
+                      {category.count}
+                    </Typography>
+                  )}
+                </div>
+              }
+            />
+          ))}
+        </StyledTabs>
+      </Box>
 
       {/* Category Content */}
-      <div style={{ marginTop: "20px" }}>
-        {activeTab === "All" && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <div style={cardStyle}>
-              <h3>Electric Kettle</h3>
-              <p>Fast boiling electric kettle with auto shut-off</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Sofa Set</h3>
-              <p>3-seater comfortable sofa with premium fabric</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Wall Clock</h3>
-              <p>Modern design wall clock for home decor</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "Electrical Appliances" && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <div style={cardStyle}>
-              <h3>Electric Kettle</h3>
-              <p>Fast boiling electric kettle with auto shut-off</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Microwave Oven</h3>
-              <p>Digital microwave with multiple cooking modes</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Coffee Maker</h3>
-              <p>Programmable coffee maker with timer</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "Furniture" && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <div style={cardStyle}>
-              <h3>Sofa Set</h3>
-              <p>3-seater comfortable sofa with premium fabric</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Dining Table</h3>
-              <p>6-seater wooden dining table set</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Bookshelf</h3>
-              <p>Modern bookshelf with adjustable shelves</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "Home Decor" && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <div style={cardStyle}>
-              <h3>Wall Clock</h3>
-              <p>Modern design wall clock for home decor</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Table Lamp</h3>
-              <p>Decorative table lamp with ambient lighting</p>
-            </div>
-            <div style={cardStyle}>
-              <h3>Throw Pillows</h3>
-              <p>Set of decorative throw pillows</p>
-            </div>
-          </div>
-        )}
-      </div>
+      <Box sx={{ px: 2 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: 2,
+          }}
+        >
+          {inventory[activeTab].map((item, index) => (
+            <InventoryCard
+              key={index}
+              title={item.title}
+              imageUrl={item.imageUrl}
+              quantity={item.quantity}
+              category={
+                activeTab === "All"
+                  ? Object.keys(inventory).find(
+                      (cat) =>
+                        cat !== "All" &&
+                        inventory[cat].some((i) => i.title === item.title)
+                    )
+                  : activeTab
+              }
+            />
+          ))}
+        </Box>
+      </Box>
     </div>
   );
 };
