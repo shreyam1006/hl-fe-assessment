@@ -2,6 +2,7 @@ import { useRef } from "react";
 import BottomNav from "./components/BottomNavigation";
 import Header from "./components/Header";
 import { LinearProgress } from "@mui/material";
+import MainContent from "./components/MainContent";
 
 function App() {
   const ref = useRef(null);
@@ -18,8 +19,7 @@ function App() {
         }}
       >
         <LinearProgress variant="determinate" value={50} />
-
-        <header className="App-header">Hello World</header>
+        <MainContent />
       </div>
       <BottomNav ref={ref} />
     </div>
