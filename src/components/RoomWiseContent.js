@@ -7,32 +7,25 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ROOM_WISE_INVENTORY } from "../utils/constants";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import {
+  increment,
+  decrement,
+  selectCounters,
+} from "../features/roomCounterSlice";
 
 const RoomWiseContent = () => {
-  const [counters, setCounters] = useState(
-    ROOM_WISE_INVENTORY.reduce((acc, roomObj) => {
-      Object.values(roomObj).forEach((room) => {
-        acc[room] = 0;
-      });
-      return acc;
-    }, {})
-  );
+  const dispatch = useDispatch();
+  const counters = useSelector(selectCounters);
 
   const handleIncrement = (room) => {
-    setCounters((prev) => ({
-      ...prev,
-      [room]: prev[room] + 1,
-    }));
+    dispatch(increment(room));
   };
 
   const handleDecrement = (room) => {
-    setCounters((prev) => ({
-      ...prev,
-      [room]: Math.max(0, prev[room] - 1),
-    }));
+    dispatch(decrement(room));
   };
 
   return (
