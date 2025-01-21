@@ -1,8 +1,11 @@
 import { Box, Grid2, IconButton } from "@mui/material";
 import { forwardRef } from "react";
+import { useDispatch } from "react-redux";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
+import { setShowInventory } from "../features/tabSlice";
 
 const Header = forwardRef((props, ref) => {
+  const dispatch = useDispatch();
   return (
     <Grid2
       container
@@ -30,6 +33,7 @@ const Header = forwardRef((props, ref) => {
           top: "50%",
           transform: "translateY(-50%)",
         }}
+        onClick={() => dispatch(setShowInventory(false))}
       >
         <ArrowBackIosNewRoundedIcon
           sx={{

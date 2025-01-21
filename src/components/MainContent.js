@@ -1,8 +1,16 @@
 import { Box, Tab, Tabs, Typography, styled } from "@mui/material";
-import React, { useState } from "react";
+import InventoryAccordions from "./InventoryAccordions";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import RoomWiseContent from "./RoomWiseContent";
 import CategoryWiseContent from "./CategoryWiseContent";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import {
+  setSelectedTab,
+  selectTab,
+  selectShowInventory,
+} from "../features/tabSlice";
+import { selectCounters } from "../features/roomCounterSlice";
 
 const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -46,7 +54,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ py: 2 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -55,11 +63,16 @@ function TabPanel(props) {
 }
 
 const MainContent = () => {
-  const [value, setValue] = useState(0);
+  const dispatch = useDispatch();
+  const selectedTab = useSelector(selectTab);
+  const showInventory = useSelector(selectShowInventory);
+  const counters = useSelector(selectCounters);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    dispatch(setSelectedTab(newValue === 0 ? "Room Wise" : "Categories Wise"));
   };
+
+  const value = selectedTab === "Room Wise" ? 0 : 1;
 
   return (
     <Box
@@ -69,7 +82,7 @@ const MainContent = () => {
         width: "100%",
       }}
     >
-      <Box sx={{ pt: "24px", px: "16px" }}>
+      <Box sx={{ pt: "24px", px: 2 }}>
         <StyledTabs
           value={value}
           onChange={handleChange}
@@ -80,7 +93,11 @@ const MainContent = () => {
         </StyledTabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <RoomWiseContent />
+        {showInventory && selectedTab === "Room Wise" ? (
+          <InventoryAccordions counters={counters} />
+        ) : (
+          <RoomWiseContent />
+        )}
       </TabPanel>
       <TabPanel value={value} index={1}>
         <CategoryWiseContent />

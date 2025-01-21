@@ -1,8 +1,24 @@
 import { BottomNavigation, Button, Paper } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowInventory, selectTab } from "../features/tabSlice";
+
+// const fetchRoomWiseData = async () => {
+//   try {
+//     const response = await fetch(
+//       "https://119a2e2a-9ce4-405d-b7f9-4781b222f735.mock.pstmn.io/rooms-data"
+//     );
+//     const data = await response.json();
+//     console.log(data);
+//   } catch (error) {
+//     console.error("Error fetching room-wise data:", error);
+//   }
+// };
 
 const BottomNav = forwardRef((props, ref) => {
   const [value, setValue] = useState(0);
+  const dispatch = useDispatch();
+  const selectedTab = useSelector(selectTab);
 
   useEffect(() => {
     ref.current.ownerDocument.body.scrollTop = 0;
@@ -55,6 +71,14 @@ const BottomNav = forwardRef((props, ref) => {
           }}
           variant="contained"
           size="large"
+          onClick={() => {
+            if (selectedTab === "Room Wise") {
+              dispatch(setShowInventory(true));
+            }
+            // else {
+            // fetchRoomWiseData();
+            // }
+          }}
         >
           <b>Continue</b>
         </Button>
