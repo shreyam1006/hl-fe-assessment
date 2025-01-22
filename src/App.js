@@ -12,7 +12,7 @@ function App() {
       <Header ref={headerRef} />
       <div
         style={{
-          height: "calc(100% - 105px)",
+          height: "calc(100% - 130px)",
           overflow: "auto",
         }}
       >

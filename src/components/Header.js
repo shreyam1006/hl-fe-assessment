@@ -32,7 +32,7 @@ const StyledTabs = styled(Tabs)({
   },
 });
 
-const StyledTab = styled(Tab)(({ theme }) => ({
+const StyledTab = styled(Tab)(() => ({
   textTransform: "none",
   fontSize: "12px",
   width: "160px",
@@ -134,6 +134,7 @@ const Header = forwardRef(({ children }, ref) => {
           sx={{
             backgroundColor: "#fff",
             px: 2,
+            mt: 3,
           }}
         >
           <StyledTabs
