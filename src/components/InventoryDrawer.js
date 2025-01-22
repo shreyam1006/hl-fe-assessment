@@ -29,35 +29,39 @@ const InventoryDrawer = ({ open, onClose, items }) => {
         >
           Added Items
         </Typography>
-        {items.map((item) => (
-          <Box
-            key={item.title}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 4,
-              gap: 2,
-            }}
-          >
+        {items.length === 0 ? (
+          <div>No Items Added</div>
+        ) : (
+          items.map((item) => (
             <Box
-              component="img"
-              src={item.imageUrl}
-              alt={item.title}
+              key={item.title}
               sx={{
-                width: 20,
-                height: 20,
-                borderRadius: "22px",
-                objectFit: "cover",
+                display: "flex",
+                alignItems: "center",
+                mb: 4,
+                gap: 2,
               }}
-            />
-            <Typography sx={{ flex: 1, fontSize: "16px" }}>
-              {item.title}
-            </Typography>
-            <Typography sx={{ color: "#666666", fontWeight: "500" }}>
-              {item.quantity}
-            </Typography>
-          </Box>
-        ))}
+            >
+              <Box
+                component="img"
+                src={item.imageUrl}
+                alt={item.title}
+                sx={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: "22px",
+                  objectFit: "cover",
+                }}
+              />
+              <Typography sx={{ flex: 1, fontSize: "16px" }}>
+                {item.title}
+              </Typography>
+              <Typography sx={{ color: "#666666", fontWeight: "500" }}>
+                {item.quantity}
+              </Typography>
+            </Box>
+          ))
+        )}
       </Box>
     </Drawer>
   );

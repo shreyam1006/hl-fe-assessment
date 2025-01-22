@@ -53,6 +53,12 @@ const CategoryWiseContent = () => {
     { name: "Home Decor", count: inventory["Home Decor"].length },
   ];
 
+  const inventoryResults = (
+    searchQuery ? inventory.All : inventory[activeTab]
+  ).filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       {/* Search Input */}
@@ -141,11 +147,10 @@ const CategoryWiseContent = () => {
             gap: 2,
           }}
         >
-          {(searchQuery ? inventory.All : inventory[activeTab])
-            .filter((item) =>
-              item.title.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            .map((item, index) => (
+          {inventoryResults.length === 0 ? (
+            <Box sx={{ px: 1 }}>No results found</Box>
+          ) : (
+            inventoryResults.map((item, index) => (
               <InventoryCard
                 key={index}
                 title={item.title}
@@ -161,7 +166,8 @@ const CategoryWiseContent = () => {
                     : activeTab
                 }
               />
-            ))}
+            ))
+          )}
         </Box>
       </Box>
     </div>

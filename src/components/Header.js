@@ -14,6 +14,7 @@ import {
   setShowInventory,
   setSelectedTab,
   selectTab,
+  selectShowInventory,
 } from "../features/tabSlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
 
@@ -50,6 +51,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 const Header = forwardRef(({ children }, ref) => {
   const dispatch = useDispatch();
   const selectedTab = useSelector(selectTab);
+  const showInventory = useSelector(selectShowInventory);
 
   const handleChange = (event, newValue) => {
     dispatch(setSelectedTab(newValue === 0 ? "Room Wise" : "Categories Wise"));
@@ -74,23 +76,25 @@ const Header = forwardRef(({ children }, ref) => {
           zIndex: 1,
         }}
       >
-        <IconButton
-          size="small"
-          sx={{
-            position: "absolute",
-            left: 20,
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
-          onClick={() => dispatch(setShowInventory(false))}
-        >
-          <ArrowBackIosNewRoundedIcon
+        {showInventory && selectedTab === "Room Wise" && (
+          <IconButton
+            size="small"
             sx={{
-              color: "#000",
-              fontSize: "18px",
+              position: "absolute",
+              left: 20,
+              top: "50%",
+              transform: "translateY(-50%)",
             }}
-          />
-        </IconButton>
+            onClick={() => dispatch(setShowInventory(false))}
+          >
+            <ArrowBackIosNewRoundedIcon
+              sx={{
+                color: "#000",
+                fontSize: "18px",
+              }}
+            />
+          </IconButton>
+        )}
         <Box
           sx={{
             display: "flex",
@@ -101,7 +105,11 @@ const Header = forwardRef(({ children }, ref) => {
             height: "100%",
           }}
         >
-          Select Inventory
+          {(showInventory && selectedTab === "Room Wise") ||
+          selectedTab === "Categories Wise"
+            ? "Add"
+            : "Select"}{" "}
+          Inventory
         </Box>
       </Grid2>
       <Box

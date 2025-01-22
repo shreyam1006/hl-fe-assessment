@@ -39,51 +39,57 @@ const InventoryAccordions = () => {
     return acc;
   }, {});
 
+  const allSpaces = Object.entries(numberedRooms);
+
   return (
     <Box sx={{ width: "100%" }}>
-      {Object.entries(numberedRooms).map(([room, count]) => (
-        <Accordion
-          key={room}
-          expanded={expanded === room}
-          onChange={handleChange(room)}
-          sx={{
-            mb: 1,
-            boxShadow: "none",
-            "&:before": {
-              display: "none",
-            },
-            backgroundColor: "#F7F7F7",
-            width: "100%",
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+      {allSpaces.length === 0 ? (
+        <Box sx={{ textAlign: "center" }}>No space found</Box>
+      ) : (
+        allSpaces.map(([room, count]) => (
+          <Accordion
+            key={room}
+            expanded={expanded === room}
+            onChange={handleChange(room)}
             sx={{
-              "& .MuiAccordionSummary-content": {
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
+              mb: 1,
+              boxShadow: "none",
+              "&:before": {
+                display: "none",
               },
+              backgroundColor: "#F7F7F7",
+              width: "100%",
             }}
           >
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: 500, fontSize: "14px" }}
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              sx={{
+                "& .MuiAccordionSummary-content": {
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                },
+              }}
             >
-              {room}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: BLUE_COLOR, fontSize: "10px" }}
-            >
-              Item Added {count}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>Details for {room} can be added here</Typography>
-          </AccordionDetails>
-        </Accordion>
-      ))}
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: 500, fontSize: "14px" }}
+              >
+                {room}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ color: BLUE_COLOR, fontSize: "10px" }}
+              >
+                Item Added {count}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>Details for {room} can be added here</Typography>
+            </AccordionDetails>
+          </Accordion>
+        ))
+      )}
     </Box>
   );
 };
