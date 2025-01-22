@@ -75,7 +75,6 @@ export const inventorySlice = createSlice({
   initialState,
   reducers: {
     resetInventory: (state) => {
-      // Reset quantities to 0 for all items in all categories
       Object.keys(state.inventory).forEach((category) => {
         state.inventory[category].forEach((item) => {
           item.quantity = 0;
@@ -84,14 +83,13 @@ export const inventorySlice = createSlice({
     },
     updateQuantity: (state, action) => {
       const { category, title, quantity } = action.payload;
-      // Update in specific category
       if (category !== "All") {
         const item = state.inventory[category].find(
           (item) => item.title === title
         );
         if (item) {
           item.quantity = quantity;
-          // Update the same item in All category
+
           const allItem = state.inventory.All.find(
             (item) => item.title === title
           );
@@ -100,13 +98,11 @@ export const inventorySlice = createSlice({
           }
         }
       } else {
-        // If updating from All view, find the original category and update both
         const allItem = state.inventory.All.find(
           (item) => item.title === title
         );
         if (allItem) {
           allItem.quantity = quantity;
-          // Find and update in original category
           Object.keys(state.inventory).forEach((cat) => {
             if (cat !== "All") {
               const categoryItem = state.inventory[cat].find(

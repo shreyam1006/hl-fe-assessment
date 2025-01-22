@@ -17,7 +17,6 @@ import {
 } from "../features/selectedSpacesSlice";
 import CategoryWiseContent from "./CategoryWiseContent";
 
-// Separate component for space inventory to properly use hooks
 const SpaceInventoryContent = ({ spaceType, spaceName }) => {
   const space = useSelector((state) => {
     const type = spaceType.toLowerCase().replace(" ", "") + "s";
@@ -46,7 +45,6 @@ const InventoryAccordions = () => {
   const diningHalls = useSelector(selectDiningHalls);
   const drawingHalls = useSelector(selectDrawingHalls);
 
-  // Get all spaces with their inventory counts
   const allSpaces = useSelector((state) => {
     const spaces = [
       ...rooms.map((space) => ({ ...space, type: "Rooms" })),
