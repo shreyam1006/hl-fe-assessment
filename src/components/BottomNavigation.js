@@ -63,39 +63,17 @@ const BottomNav = forwardRef((props, ref) => {
     if (selectedTab === "Room Wise") {
       dispatch(setShowInventory(true));
 
-      // Set selected spaces for each room type
-      if (counters["Rooms"] > 0) {
-        dispatch(
-          setSelectedSpaces({
-            type: "Rooms",
-            count: counters["Rooms"],
-          })
-        );
-      }
-      if (counters["Kitchen"] > 0) {
-        dispatch(
-          setSelectedSpaces({
-            type: "Kitchen",
-            count: counters["Kitchen"],
-          })
-        );
-      }
-      if (counters["Dining Hall"] > 0) {
-        dispatch(
-          setSelectedSpaces({
-            type: "Dining Hall",
-            count: counters["Dining Hall"],
-          })
-        );
-      }
-      if (counters["Drawing Hall"] > 0) {
-        dispatch(
-          setSelectedSpaces({
-            type: "Drawing Hall",
-            count: counters["Drawing Hall"],
-          })
-        );
-      }
+      // Set selected spaces for each room type with proper format
+      Object.entries(counters).forEach(([type, count]) => {
+        if (count > 0) {
+          dispatch(
+            setSelectedSpaces({
+              type,
+              count,
+            })
+          );
+        }
+      });
     }
   };
 

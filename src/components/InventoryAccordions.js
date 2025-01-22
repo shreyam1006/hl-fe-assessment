@@ -15,6 +15,24 @@ import {
   selectDiningHalls,
   selectDrawingHalls,
 } from "../features/selectedSpacesSlice";
+import CategoryWiseContent from "./CategoryWiseContent";
+
+// Separate component for space inventory to properly use hooks
+const SpaceInventoryContent = ({ spaceType, spaceName }) => {
+  const space = useSelector((state) => {
+    const type = spaceType.toLowerCase().replace(" ", "") + "s";
+    return state.selectedSpaces[type]?.find((s) => s.name === spaceName);
+  });
+
+  return (
+    <CategoryWiseContent
+      customInventory={space?.inventory}
+      spaceType={spaceType}
+      spaceName={spaceName}
+      gridColumns={2}
+    />
+  );
+};
 
 const InventoryAccordions = () => {
   const [expanded, setExpanded] = useState(false);
@@ -28,29 +46,35 @@ const InventoryAccordions = () => {
   const diningHalls = useSelector(selectDiningHalls);
   const drawingHalls = useSelector(selectDrawingHalls);
 
-  // Combine all spaces into a single object
-  const numberedRooms = [
-    ...rooms,
-    ...kitchens,
-    ...diningHalls,
-    ...drawingHalls,
-  ].reduce((acc, room) => {
-    acc[room] = 0; // Initialize count to 0 for each room
-    return acc;
-  }, {});
+  // Get all spaces with their inventory counts
+  const allSpaces = useSelector((state) => {
+    const spaces = [
+      ...rooms.map((space) => ({ ...space, type: "Rooms" })),
+      ...kitchens.map((space) => ({ ...space, type: "Kitchen" })),
+      ...diningHalls.map((space) => ({ ...space, type: "Dining Hall" })),
+      ...drawingHalls.map((space) => ({ ...space, type: "Drawing Hall" })),
+    ];
 
-  const allSpaces = Object.entries(numberedRooms);
+    return spaces.map((space) => {
+      const itemCount =
+        space.inventory.All?.reduce(
+          (sum, item) => sum + (item.quantity || 0),
+          0
+        ) || 0;
+      return [space.name, itemCount, space.type];
+    });
+  });
 
   return (
     <Box sx={{ width: "100%" }}>
       {allSpaces.length === 0 ? (
         <Box sx={{ textAlign: "center" }}>No space found</Box>
       ) : (
-        allSpaces.map(([room, count]) => (
+        allSpaces.map(([spaceName, count, spaceType]) => (
           <Accordion
-            key={room}
-            expanded={expanded === room}
-            onChange={handleChange(room)}
+            key={spaceName}
+            expanded={expanded === spaceName}
+            onChange={handleChange(spaceName)}
             sx={{
               mb: 1,
               boxShadow: "none",
@@ -75,7 +99,7 @@ const InventoryAccordions = () => {
                 variant="subtitle1"
                 sx={{ fontWeight: 500, fontSize: "14px" }}
               >
-                {room}
+                {spaceName}
               </Typography>
               <Typography
                 variant="subtitle1"
@@ -85,7 +109,10 @@ const InventoryAccordions = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography>Details for {room} can be added here</Typography>
+              <SpaceInventoryContent
+                spaceType={spaceType}
+                spaceName={spaceName}
+              />
             </AccordionDetails>
           </Accordion>
         ))

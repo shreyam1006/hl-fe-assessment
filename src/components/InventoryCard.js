@@ -1,8 +1,6 @@
 import React from "react";
 import { Box, Typography, Stack, IconButton } from "@mui/material";
 import ConfirmDialog from "./ConfirmDialog";
-import { useDispatch } from "react-redux";
-import { updateQuantity } from "../features/inventorySlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
 
 const cardStyle = {
@@ -21,12 +19,17 @@ const imageStyle = {
   objectFit: "cover",
 };
 
-const InventoryCard = ({ title, imageUrl, quantity, category }) => {
-  const dispatch = useDispatch();
+const InventoryCard = ({
+  title,
+  imageUrl,
+  quantity,
+  category,
+  onQuantityChange,
+}) => {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleIncrement = () => {
-    dispatch(updateQuantity({ category, title, quantity: quantity + 1 }));
+    onQuantityChange(quantity + 1);
   };
 
   const handleDecrement = () => {
@@ -34,13 +37,13 @@ const InventoryCard = ({ title, imageUrl, quantity, category }) => {
       if (quantity === 1) {
         setOpenDialog(true);
       } else {
-        dispatch(updateQuantity({ category, title, quantity: quantity - 1 }));
+        onQuantityChange(quantity - 1);
       }
     }
   };
 
   const handleConfirmRemove = () => {
-    dispatch(updateQuantity({ category, title, quantity: quantity - 1 }));
+    onQuantityChange(quantity - 1);
     setOpenDialog(false);
   };
 

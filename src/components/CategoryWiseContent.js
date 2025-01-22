@@ -3,8 +3,10 @@ import { BLUE_COLOR } from "../utils/colorConstants";
 import SearchIcon from "@mui/icons-material/Search";
 import { Tabs, Tab, Box, styled, Typography } from "@mui/material";
 import InventoryCard from "./InventoryCard";
-import { useSelector } from "react-redux";
-import { selectInventory } from "../features/inventorySlice";
+import { useSelector, useDispatch } from "react-redux";
+import { selectInventory, updateQuantity } from "../features/inventorySlice";
+import { updateSpaceInventory } from "../features/selectedSpacesSlice";
+import { CATEGORY_DATA } from "../features/inventorySlice";
 
 const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -34,34 +36,72 @@ const StyledTab = styled(Tab)({
   },
 });
 
-const CategoryWiseContent = () => {
+const CategoryWiseContent = ({
+  customInventory,
+  spaceType,
+  spaceName,
+  onInventoryUpdate,
+  gridColumns = 2,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useDispatch();
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
   const [activeTab, setActiveTab] = useState("All");
 
-  const inventory = useSelector(selectInventory);
+  const globalInventory = useSelector(selectInventory);
+  const inventory = customInventory || globalInventory;
+
   const categories = [
-    { name: "All", count: inventory.All.length },
+    { name: "All", count: inventory.All?.length || 0 },
     {
       name: "Electrical Appliances",
-      count: inventory["Electrical Appliances"].length,
+      count: inventory["Electrical Appliances"]?.length || 0,
     },
-    { name: "Furniture", count: inventory.Furniture.length },
-    { name: "Home Decor", count: inventory["Home Decor"].length },
+    { name: "Furniture", count: inventory.Furniture?.length || 0 },
+    { name: "Home Decor", count: inventory["Home Decor"]?.length || 0 },
   ];
 
   const inventoryResults = (
-    searchQuery ? inventory.All : inventory[activeTab]
+    searchQuery ? inventory.All || [] : inventory[activeTab] || []
   ).filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleQuantityChange = (item, newQuantity) => {
+    // Always find the original category for the item
+    const originalCategory = Object.keys(CATEGORY_DATA).find((cat) =>
+      CATEGORY_DATA[cat].some((i) => i.title === item.title)
+    );
+    if (!originalCategory) return;
+
+    // For space inventory, update in original category
+    if (customInventory && spaceType && spaceName) {
+      dispatch(
+        updateSpaceInventory({
+          type: spaceType,
+          spaceName,
+          category: originalCategory,
+          title: item.title,
+          quantity: newQuantity,
+        })
+      );
+    } else {
+      // For global inventory, update in active tab's category
+      dispatch(
+        updateQuantity({
+          category: activeTab,
+          title: item.title,
+          quantity: newQuantity,
+        })
+      );
+    }
+  };
+
   return (
     <div>
-      {/* Search Input */}
       <div style={{ marginBottom: "20px", position: "relative" }}>
         <SearchIcon
           style={{
@@ -115,7 +155,7 @@ const CategoryWiseContent = () => {
                     }}
                   >
                     {category.name}
-                    {category.count && (
+                    {category.count > 0 && (
                       <Typography
                         component="span"
                         sx={{
@@ -143,7 +183,7 @@ const CategoryWiseContent = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
+            gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
             gap: 2,
           }}
         >
@@ -154,16 +194,23 @@ const CategoryWiseContent = () => {
               <InventoryCard
                 key={index}
                 title={item.title}
-                imageUrl={item.imageUrl}
+                imageUrl={
+                  item.imageUrl ||
+                  globalInventory.All.find((i) => i.title === item.title)
+                    ?.imageUrl
+                }
                 quantity={item.quantity}
                 category={
                   activeTab === "All"
                     ? Object.keys(inventory).find(
                         (cat) =>
                           cat !== "All" &&
-                          inventory[cat].some((i) => i.title === item.title)
+                          inventory[cat]?.some((i) => i.title === item.title)
                       )
                     : activeTab
+                }
+                onQuantityChange={(newQuantity) =>
+                  handleQuantityChange(item, newQuantity)
                 }
               />
             ))

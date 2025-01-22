@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const CATEGORY_DATA = {
+export const CATEGORY_DATA = {
   "Electrical Appliances": [
     {
       title: "Smart TV",
