@@ -87,48 +87,50 @@ const CategoryWiseContent = () => {
         />
       </div>
 
-      {/* Category Tabs */}
-      <Box sx={{ mb: 3, pl: 2 }}>
-        <StyledTabs
-          value={activeTab}
-          onChange={(e, newValue) => setActiveTab(newValue)}
-          variant="scrollable"
-          scrollButtons={false}
-        >
-          {categories.map((category) => (
-            <StyledTab
-              key={category.name}
-              value={category.name}
-              label={
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  {category.name}
-                  {category.count && (
-                    <Typography
-                      component="span"
-                      sx={{
-                        color: "#000000",
-                        fontSize: "8px",
-                        fontWeight: 700,
-                        borderRadius: "20px",
-                        background: "#F5F5F5",
-                        p: "3.5px",
-                      }}
-                    >
-                      {category.count}
-                    </Typography>
-                  )}
-                </div>
-              }
-            />
-          ))}
-        </StyledTabs>
-      </Box>
+      {/* Category Tabs - Only show when no search query */}
+      {!searchQuery && (
+        <Box sx={{ mb: 3, pl: 2 }}>
+          <StyledTabs
+            value={activeTab}
+            onChange={(e, newValue) => setActiveTab(newValue)}
+            variant="scrollable"
+            scrollButtons={false}
+          >
+            {categories.map((category) => (
+              <StyledTab
+                key={category.name}
+                value={category.name}
+                label={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    {category.name}
+                    {category.count && (
+                      <Typography
+                        component="span"
+                        sx={{
+                          color: "#000000",
+                          fontSize: "8px",
+                          fontWeight: 700,
+                          borderRadius: "20px",
+                          background: "#F5F5F5",
+                          p: "3.5px",
+                        }}
+                      >
+                        {category.count}
+                      </Typography>
+                    )}
+                  </div>
+                }
+              />
+            ))}
+          </StyledTabs>
+        </Box>
+      )}
 
       {/* Category Content */}
       <Box sx={{ px: 2 }}>
@@ -139,23 +141,27 @@ const CategoryWiseContent = () => {
             gap: 2,
           }}
         >
-          {inventory[activeTab].map((item, index) => (
-            <InventoryCard
-              key={index}
-              title={item.title}
-              imageUrl={item.imageUrl}
-              quantity={item.quantity}
-              category={
-                activeTab === "All"
-                  ? Object.keys(inventory).find(
-                      (cat) =>
-                        cat !== "All" &&
-                        inventory[cat].some((i) => i.title === item.title)
-                    )
-                  : activeTab
-              }
-            />
-          ))}
+          {(searchQuery ? inventory.All : inventory[activeTab])
+            .filter((item) =>
+              item.title.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((item, index) => (
+              <InventoryCard
+                key={index}
+                title={item.title}
+                imageUrl={item.imageUrl}
+                quantity={item.quantity}
+                category={
+                  activeTab === "All"
+                    ? Object.keys(inventory).find(
+                        (cat) =>
+                          cat !== "All" &&
+                          inventory[cat].some((i) => i.title === item.title)
+                      )
+                    : activeTab
+                }
+              />
+            ))}
         </Box>
       </Box>
     </div>
