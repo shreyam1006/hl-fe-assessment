@@ -1,6 +1,14 @@
-import { BottomNavigation, Button, Paper, Box } from "@mui/material";
+import {
+  BottomNavigation,
+  Button,
+  Paper,
+  Box,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import InventoryBanner from "./InventoryBanner";
 import InventoryDrawer from "./InventoryDrawer";
+import ConfirmDialog from "./ConfirmDialog";
 import { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,6 +24,8 @@ import { BLUE_COLOR } from "../utils/colorConstants";
 const BottomNav = forwardRef((props, ref) => {
   const [value, setValue] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const dispatch = useDispatch();
   const selectedTab = useSelector(selectTab);
   const showInventory = useSelector(selectShowInventory);
@@ -49,6 +59,46 @@ const BottomNav = forwardRef((props, ref) => {
     ref.current.ownerDocument.body.scrollTop = 0;
   }, [value, ref]);
 
+  const handleContinue = () => {
+    if (selectedTab === "Room Wise") {
+      dispatch(setShowInventory(true));
+
+      // Set selected spaces for each room type
+      if (counters["Rooms"] > 0) {
+        dispatch(
+          setSelectedSpaces({
+            type: "Rooms",
+            count: counters["Rooms"],
+          })
+        );
+      }
+      if (counters["Kitchen"] > 0) {
+        dispatch(
+          setSelectedSpaces({
+            type: "Kitchen",
+            count: counters["Kitchen"],
+          })
+        );
+      }
+      if (counters["Dining Hall"] > 0) {
+        dispatch(
+          setSelectedSpaces({
+            type: "Dining Hall",
+            count: counters["Dining Hall"],
+          })
+        );
+      }
+      if (counters["Drawing Hall"] > 0) {
+        dispatch(
+          setSelectedSpaces({
+            type: "Drawing Hall",
+            count: counters["Drawing Hall"],
+          })
+        );
+      }
+    }
+  };
+
   return (
     <>
       <InventoryDrawer
@@ -56,6 +106,30 @@ const BottomNav = forwardRef((props, ref) => {
         onClose={() => setDrawerOpen(false)}
         items={uniqueInventoryItems}
       />
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onCancel={() => setConfirmDialogOpen(false)}
+        onConfirm={() => {
+          setConfirmDialogOpen(false);
+          setSnackbarOpen(true);
+          handleContinue();
+        }}
+        title={`Are you sure you want to add ${totalItems} number of items ?`}
+      />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {totalItems} items added successfully!
+        </Alert>
+      </Snackbar>
       <Paper
         ref={ref}
         sx={{
@@ -93,7 +167,6 @@ const BottomNav = forwardRef((props, ref) => {
               display: "flex",
               width: "100%",
               gap: 2,
-              px: 2,
               height: "100%",
             }}
           >
@@ -134,42 +207,10 @@ const BottomNav = forwardRef((props, ref) => {
               variant="contained"
               size="large"
               onClick={() => {
-                if (selectedTab === "Room Wise") {
-                  dispatch(setShowInventory(true));
-
-                  // Set selected spaces for each room type
-                  if (counters["Rooms"] > 0) {
-                    dispatch(
-                      setSelectedSpaces({
-                        type: "Rooms",
-                        count: counters["Rooms"],
-                      })
-                    );
-                  }
-                  if (counters["Kitchen"] > 0) {
-                    dispatch(
-                      setSelectedSpaces({
-                        type: "Kitchen",
-                        count: counters["Kitchen"],
-                      })
-                    );
-                  }
-                  if (counters["Dining Hall"] > 0) {
-                    dispatch(
-                      setSelectedSpaces({
-                        type: "Dining Hall",
-                        count: counters["Dining Hall"],
-                      })
-                    );
-                  }
-                  if (counters["Drawing Hall"] > 0) {
-                    dispatch(
-                      setSelectedSpaces({
-                        type: "Drawing Hall",
-                        count: counters["Drawing Hall"],
-                      })
-                    );
-                  }
+                if (showInventory || selectedTab === "Categories Wise") {
+                  setConfirmDialogOpen(true);
+                } else {
+                  handleContinue();
                 }
               }}
             >

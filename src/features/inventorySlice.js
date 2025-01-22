@@ -74,6 +74,14 @@ export const inventorySlice = createSlice({
   name: "inventory",
   initialState,
   reducers: {
+    resetInventory: (state) => {
+      // Reset quantities to 0 for all items in all categories
+      Object.keys(state.inventory).forEach((category) => {
+        state.inventory[category].forEach((item) => {
+          item.quantity = 0;
+        });
+      });
+    },
     updateQuantity: (state, action) => {
       const { category, title, quantity } = action.payload;
       // Update in specific category
@@ -115,7 +123,7 @@ export const inventorySlice = createSlice({
   },
 });
 
-export const { updateQuantity } = inventorySlice.actions;
+export const { updateQuantity, resetInventory } = inventorySlice.actions;
 
 export const selectInventory = (state) => state.inventory.inventory;
 
