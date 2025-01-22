@@ -53,7 +53,6 @@ const BottomNav = forwardRef((props, ref) => {
         onClose={() => setDrawerOpen(false)}
         items={uniqueInventoryItems}
       />
-
       <Paper
         ref={ref}
         sx={{
@@ -64,10 +63,10 @@ const BottomNav = forwardRef((props, ref) => {
           width: "100%",
           borderRadius: "12px",
           boxShadow: `0px -4px 8px 0px #0000001A,
-                      0px -14px 14px 0px #00000017,
-                      0px -32px 19px 0px #0000000D,
-                      0px -56px 22px 0px #00000003,
-                      0px -88px 25px 0px #00000000`,
+                        0px -14px 14px 0px #00000017,
+                        0px -32px 19px 0px #0000000D,
+                        0px -56px 22px 0px #00000003,
+                        0px -88px 25px 0px #00000000`,
         }}
       >
         {(showInventory || selectedTab === "Categories Wise") && (
@@ -80,7 +79,7 @@ const BottomNav = forwardRef((props, ref) => {
             p: 0,
             display: "flex",
             alignItems: "center",
-            height: "100%",
+            height: "76px",
           }}
           onChange={(event, newValue) => {
             setValue(newValue);
@@ -92,7 +91,7 @@ const BottomNav = forwardRef((props, ref) => {
               width: "100%",
               gap: 2,
               px: 2,
-              height: "76px",
+              height: "100%",
             }}
           >
             {(showInventory || selectedTab === "Categories Wise") && (

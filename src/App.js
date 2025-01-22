@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import BottomNav from "./components/BottomNavigation";
 import Header from "./components/Header";
-import { LinearProgress } from "@mui/material";
 import MainContent from "./components/MainContent";
 
 function App() {
@@ -13,12 +12,10 @@ function App() {
       <Header ref={headerRef} />
       <div
         style={{
-          height: "calc(100% - 110px)",
-          marginTop: "54px",
+          height: "calc(100% - 105px)",
           overflow: "auto",
         }}
       >
-        <LinearProgress variant="determinate" value={50} />
         <MainContent />
       </div>
       <BottomNav ref={ref} />

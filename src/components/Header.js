@@ -1,60 +1,141 @@
-import { Box, Grid2, IconButton } from "@mui/material";
+import {
+  Box,
+  Grid2,
+  IconButton,
+  LinearProgress,
+  Tab,
+  Tabs,
+  styled,
+} from "@mui/material";
 import { forwardRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
-import { setShowInventory } from "../features/tabSlice";
+import {
+  setShowInventory,
+  setSelectedTab,
+  selectTab,
+} from "../features/tabSlice";
+import { BLUE_COLOR } from "../utils/colorConstants";
 
-const Header = forwardRef((props, ref) => {
+const StyledTabs = styled(Tabs)({
+  "& .MuiTabs-indicator": {
+    display: "none",
+  },
+  minHeight: "unset",
+  "& .MuiTabs-flexContainer": {
+    gap: "4px",
+    background: "#F7F7F7",
+    borderRadius: "12px",
+    padding: "4px 8px",
+  },
+});
+
+const StyledTab = styled(Tab)(({ theme }) => ({
+  textTransform: "none",
+  fontSize: "12px",
+  width: "160px",
+  fontWeight: "500",
+  padding: "12px 32px",
+  borderRadius: "10px",
+  color: "#000",
+  backgroundColor: "#F7F7F7",
+  minHeight: "unset",
+  "&.Mui-selected": {
+    color: "#fff",
+    backgroundColor: BLUE_COLOR,
+    fontWeight: 700,
+  },
+}));
+
+const Header = forwardRef(({ children }, ref) => {
   const dispatch = useDispatch();
+  const selectedTab = useSelector(selectTab);
+
+  const handleChange = (event, newValue) => {
+    dispatch(setSelectedTab(newValue === 0 ? "Room Wise" : "Categories Wise"));
+  };
+
+  const value = selectedTab === "Room Wise" ? 0 : 1;
   return (
-    <Grid2
-      container
-      ref={ref}
-      sx={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        width: "100%",
-        height: "54px",
-        display: "flex",
-        alignItems: "center",
-        padding: "0 16px",
-        fontSize: "16px",
-        fontWeight: 700,
-        backgroundColor: "#fff",
-      }}
-    >
-      <IconButton
-        size="small"
+    <Box>
+      <Grid2
+        container
+        ref={ref}
         sx={{
-          position: "absolute",
-          left: 20,
-          top: "50%",
-          transform: "translateY(-50%)",
+          position: "sticky",
+          width: "100%",
+          height: "54px",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 16px",
+          fontSize: "16px",
+          fontWeight: 700,
+          backgroundColor: "#fff",
+          zIndex: 1,
         }}
-        onClick={() => dispatch(setShowInventory(false))}
       >
-        <ArrowBackIosNewRoundedIcon
+        <IconButton
+          size="small"
           sx={{
-            color: "#000",
-            fontSize: "18px",
+            position: "absolute",
+            left: 20,
+            top: "50%",
+            transform: "translateY(-50%)",
           }}
-        />
-      </IconButton>
+          onClick={() => dispatch(setShowInventory(false))}
+        >
+          <ArrowBackIosNewRoundedIcon
+            sx={{
+              color: "#000",
+              fontSize: "18px",
+            }}
+          />
+        </IconButton>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          Select Inventory
+        </Box>
+      </Grid2>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          textAlign: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
+          position: "sticky",
+          backgroundColor: "#fff",
+          zIndex: 1,
         }}
       >
-        Select Inventory
+        <LinearProgress variant="determinate" value={50} />
       </Box>
-    </Grid2>
+      <Box
+        sx={{
+          position: "sticky",
+          zIndex: 1,
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            px: 2,
+          }}
+        >
+          <StyledTabs
+            value={value}
+            onChange={handleChange}
+            aria-label="styled tabs example"
+          >
+            <StyledTab label="Room Wise" />
+            <StyledTab label="Categories Wise" />
+          </StyledTabs>
+        </Box>
+      </Box>
+    </Box>
   );
 });
 

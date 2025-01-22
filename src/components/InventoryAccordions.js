@@ -41,7 +41,7 @@ const InventoryAccordions = ({ counters }) => {
   const numberedRooms = createNumberedRooms();
 
   return (
-    <Box sx={{ width: "100%", mt: 2 }}>
+    <Box sx={{ width: "100%" }}>
       {Object.entries(numberedRooms).map(([room, count]) => (
         <Accordion
           key={room}
