@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { TABS } from "../utils/constants";
 
 export const tabSlice = createSlice({
   name: "tab",
   initialState: {
-    selectedTab: "Room Wise",
+    selectedTab: TABS.RoomsWise,
     showInventory: false,
   },
   reducers: {

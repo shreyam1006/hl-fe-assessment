@@ -20,6 +20,7 @@ import { selectInventory } from "../features/inventorySlice";
 import { selectCounters } from "../features/roomCounterSlice";
 import { setSelectedSpaces } from "../features/selectedSpacesSlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import { TABS } from "../utils/constants";
 
 const BottomNav = forwardRef((props, ref) => {
   const [value, setValue] = useState(0);
@@ -41,7 +42,7 @@ const BottomNav = forwardRef((props, ref) => {
 
   // Get items based on current tab
   const uniqueInventoryItems =
-    selectedTab === "Categories Wise"
+    selectedTab === TABS.CategoriesWise
       ? // For Categories tab, only show items from inventory slice
         Object.entries(inventory).reduce((uniqueItems, [category, items]) => {
           items
@@ -94,7 +95,7 @@ const BottomNav = forwardRef((props, ref) => {
   }, [value, ref]);
 
   const handleContinue = () => {
-    if (selectedTab === "Room Wise") {
+    if (selectedTab === TABS.RoomsWise) {
       dispatch(setShowInventory(true));
 
       // Set selected spaces for each room type with proper format
@@ -158,7 +159,7 @@ const BottomNav = forwardRef((props, ref) => {
                         0px -88px 25px 0px #00000000`,
         }}
       >
-        {(showInventory || selectedTab === "Categories Wise") && (
+        {(showInventory || selectedTab === TABS.CategoriesWise) && (
           <InventoryBanner />
         )}
         <BottomNavigation
@@ -182,7 +183,7 @@ const BottomNav = forwardRef((props, ref) => {
               height: "100%",
             }}
           >
-            {(showInventory || selectedTab === "Categories Wise") && (
+            {(showInventory || selectedTab === TABS.CategoriesWise) && (
               <Box
                 sx={{
                   color: BLUE_COLOR,
@@ -202,7 +203,7 @@ const BottomNav = forwardRef((props, ref) => {
               sx={{
                 alignSelf: "center",
                 width:
-                  showInventory || selectedTab === "Categories Wise"
+                  showInventory || selectedTab === TABS.CategoriesWise
                     ? "50%"
                     : "90%",
                 height: "44px",
@@ -219,7 +220,7 @@ const BottomNav = forwardRef((props, ref) => {
               variant="contained"
               size="large"
               onClick={() => {
-                if (showInventory || selectedTab === "Categories Wise") {
+                if (showInventory || selectedTab === TABS.CategoriesWise) {
                   setConfirmDialogOpen(true);
                 } else {
                   handleContinue();

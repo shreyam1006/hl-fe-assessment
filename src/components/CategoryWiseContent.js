@@ -14,6 +14,7 @@ import {
 } from "../features/selectedSpacesSlice";
 import { CATEGORY_DATA } from "../features/inventorySlice";
 import { selectTab } from "../features/tabSlice";
+import { TABS } from "../utils/constants";
 
 const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -58,7 +59,7 @@ const CategoryWiseContent = ({
     setSearchQuery(e.target.value);
   };
   const [activeTab, setActiveTab] = useState("All");
-  const isCategoriesTab = selectedTab === "Categories Wise";
+  const isCategoriesTab = selectedTab === TABS.CategoriesWise;
 
   const globalInventory = useSelector(selectInventory);
   const roomsInventory = useSelector(selectRooms);

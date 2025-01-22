@@ -6,3 +6,8 @@ export const ROOM_WISE_INVENTORY = [
     DiningHall: "Dining Hall",
   },
 ];
+
+export const TABS = {
+  RoomsWise: "Room Wise",
+  CategoriesWise: "Categories Wise",
+};

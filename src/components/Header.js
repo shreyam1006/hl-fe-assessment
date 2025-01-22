@@ -17,6 +17,7 @@ import {
   selectShowInventory,
 } from "../features/tabSlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import { TABS } from "../utils/constants";
 
 const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -54,10 +55,12 @@ const Header = forwardRef(({ children }, ref) => {
   const showInventory = useSelector(selectShowInventory);
 
   const handleChange = (event, newValue) => {
-    dispatch(setSelectedTab(newValue === 0 ? "Room Wise" : "Categories Wise"));
+    dispatch(
+      setSelectedTab(newValue === 0 ? TABS.RoomsWise : TABS.CategoriesWise)
+    );
   };
 
-  const value = selectedTab === "Room Wise" ? 0 : 1;
+  const value = selectedTab === TABS.RoomsWise ? 0 : 1;
   return (
     <Box>
       <Grid2
@@ -76,7 +79,7 @@ const Header = forwardRef(({ children }, ref) => {
           zIndex: 1,
         }}
       >
-        {showInventory && selectedTab === "Room Wise" && (
+        {showInventory && selectedTab === TABS.RoomsWise && (
           <IconButton
             size="small"
             sx={{
@@ -105,8 +108,8 @@ const Header = forwardRef(({ children }, ref) => {
             height: "100%",
           }}
         >
-          {(showInventory && selectedTab === "Room Wise") ||
-          selectedTab === "Categories Wise"
+          {(showInventory && selectedTab === TABS.RoomsWise) ||
+          selectedTab === TABS.CategoriesWise
             ? "Add"
             : "Select"}{" "}
           Inventory
