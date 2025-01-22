@@ -9,6 +9,8 @@ import {
   selectShowInventory,
 } from "../features/tabSlice";
 import { selectInventory } from "../features/inventorySlice";
+import { selectCounters } from "../features/roomCounterSlice";
+import { setSelectedSpaces } from "../features/selectedSpacesSlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
 
 const BottomNav = forwardRef((props, ref) => {
@@ -18,6 +20,7 @@ const BottomNav = forwardRef((props, ref) => {
   const selectedTab = useSelector(selectTab);
   const showInventory = useSelector(selectShowInventory);
   const inventory = useSelector(selectInventory);
+  const counters = useSelector(selectCounters);
 
   const uniqueInventoryItems = Object.entries(inventory).reduce(
     (uniqueItems, [category, items]) => {
@@ -133,6 +136,40 @@ const BottomNav = forwardRef((props, ref) => {
               onClick={() => {
                 if (selectedTab === "Room Wise") {
                   dispatch(setShowInventory(true));
+
+                  // Set selected spaces for each room type
+                  if (counters["Rooms"] > 0) {
+                    dispatch(
+                      setSelectedSpaces({
+                        type: "Rooms",
+                        count: counters["Rooms"],
+                      })
+                    );
+                  }
+                  if (counters["Kitchen"] > 0) {
+                    dispatch(
+                      setSelectedSpaces({
+                        type: "Kitchen",
+                        count: counters["Kitchen"],
+                      })
+                    );
+                  }
+                  if (counters["Dining Hall"] > 0) {
+                    dispatch(
+                      setSelectedSpaces({
+                        type: "Dining Hall",
+                        count: counters["Dining Hall"],
+                      })
+                    );
+                  }
+                  if (counters["Drawing Hall"] > 0) {
+                    dispatch(
+                      setSelectedSpaces({
+                        type: "Drawing Hall",
+                        count: counters["Drawing Hall"],
+                      })
+                    );
+                  }
                 }
               }}
             >

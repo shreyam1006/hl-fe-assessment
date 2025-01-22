@@ -8,37 +8,36 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import { useSelector } from "react-redux";
+import {
+  selectRooms,
+  selectKitchens,
+  selectDiningHalls,
+  selectDrawingHalls,
+} from "../features/selectedSpacesSlice";
 
-const InventoryAccordions = ({ counters }) => {
+const InventoryAccordions = () => {
   const [expanded, setExpanded] = useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  // Group rooms by type and create numbered names
-  const createNumberedRooms = () => {
-    const roomGroups = {};
-    Object.entries(counters).forEach(([room, count]) => {
-      // Create numbered entries for all room types
-      const nameMap = {
-        Rooms: "Room",
-        Kitchen: "Kitchen",
-        "Drawing Hall": "Drawing Hall",
-        "Dining Hall": "Dining Hall",
-      };
+  const rooms = useSelector(selectRooms);
+  const kitchens = useSelector(selectKitchens);
+  const diningHalls = useSelector(selectDiningHalls);
+  const drawingHalls = useSelector(selectDrawingHalls);
 
-      const baseName = nameMap[room];
-      if (baseName) {
-        for (let i = 1; i <= count; i++) {
-          roomGroups[`${baseName} ${i}`] = 0;
-        }
-      }
-    });
-    return roomGroups;
-  };
-
-  const numberedRooms = createNumberedRooms();
+  // Combine all spaces into a single object
+  const numberedRooms = [
+    ...rooms,
+    ...kitchens,
+    ...diningHalls,
+    ...drawingHalls,
+  ].reduce((acc, room) => {
+    acc[room] = 0; // Initialize count to 0 for each room
+    return acc;
+  }, {});
 
   return (
     <Box sx={{ width: "100%" }}>
