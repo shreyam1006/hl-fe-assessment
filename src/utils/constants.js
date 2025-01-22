@@ -16,5 +16,6 @@ export const API = {
   BASE_URL: "https://9d07abe9-2b20-4809-9ba8-9e42900ba0c8.mock.pstmn.io",
   ENDPOINTS: {
     ORDER: "/api/order",
+    SET_ROOMS: "/api/set-rooms",
   },
 };

@@ -95,20 +95,55 @@ const BottomNav = forwardRef((props, ref) => {
     ref.current.ownerDocument.body.scrollTop = 0;
   }, [value, ref]);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedTab === TABS.RoomsWise) {
-      dispatch(setShowInventory(true));
+      setIsLoading(true);
+      try {
+        Object.entries(counters).forEach(([type, count]) => {
+          if (count > 0) {
+            dispatch(
+              setSelectedSpaces({
+                type,
+                count,
+              })
+            );
+          }
+        });
 
-      Object.entries(counters).forEach(([type, count]) => {
-        if (count > 0) {
-          dispatch(
-            setSelectedSpaces({
-              type,
-              count,
-            })
-          );
+        const response = await fetch(
+          `${API.BASE_URL}${API.ENDPOINTS.SET_ROOMS}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              Rooms: rooms.length.toString(),
+              Kitchen: kitchens.length.toString(),
+              "Dining Hall": diningHalls.length.toString(),
+              "Drawing Hall": drawingHalls.length.toString(),
+            }),
+          }
+        );
+
+        const data = await response.text();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to set rooms");
         }
-      });
+
+        dispatch(setShowInventory(true));
+        setSnackbarMessage(data.message || "Rooms set successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Error setting rooms:", error);
+        setSnackbarMessage(error.message || "Failed to set rooms");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
