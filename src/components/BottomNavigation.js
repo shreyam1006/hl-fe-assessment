@@ -32,24 +32,58 @@ const BottomNav = forwardRef((props, ref) => {
   const inventory = useSelector(selectInventory);
   const counters = useSelector(selectCounters);
 
-  const uniqueInventoryItems = Object.entries(inventory).reduce(
-    (uniqueItems, [category, items]) => {
-      items
-        .filter((item) => item.quantity > 0)
-        .forEach((item) => {
-          if (
-            !uniqueItems.find(
-              (existingItem) => existingItem.title === item.title
-            )
-          ) {
-            uniqueItems.push(item);
-          }
-        });
-      return uniqueItems;
-    },
-    []
+  const rooms = useSelector((state) => state.selectedSpaces.rooms);
+  const kitchens = useSelector((state) => state.selectedSpaces.kitchens);
+  const diningHalls = useSelector((state) => state.selectedSpaces.diningHalls);
+  const drawingHalls = useSelector(
+    (state) => state.selectedSpaces.drawingHalls
   );
 
+  // Get items based on current tab
+  const uniqueInventoryItems =
+    selectedTab === "Categories Wise"
+      ? // For Categories tab, only show items from inventory slice
+        Object.entries(inventory).reduce((uniqueItems, [category, items]) => {
+          items
+            .filter((item) => item.quantity > 0)
+            .forEach((item) => {
+              if (
+                !uniqueItems.find(
+                  (existingItem) => existingItem.title === item.title
+                )
+              ) {
+                uniqueItems.push({ ...item });
+              }
+            });
+          return uniqueItems;
+        }, [])
+      : // For Room Wise tab, only show items from selected spaces
+        (() => {
+          const allSpaces = [
+            ...rooms,
+            ...kitchens,
+            ...diningHalls,
+            ...drawingHalls,
+          ];
+          const aggregatedItems = {};
+
+          // Only include items from spaces
+          allSpaces.forEach((space) => {
+            if (space?.inventory?.All) {
+              space.inventory.All.forEach((item) => {
+                if (item.quantity > 0) {
+                  if (!aggregatedItems[item.title]) {
+                    aggregatedItems[item.title] = { ...item };
+                  } else {
+                    aggregatedItems[item.title].quantity += item.quantity;
+                  }
+                }
+              });
+            }
+          });
+
+          return Object.values(aggregatedItems);
+        })();
   const totalItems = uniqueInventoryItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -92,7 +126,7 @@ const BottomNav = forwardRef((props, ref) => {
           setSnackbarOpen(true);
           handleContinue();
         }}
-        title={`Are you sure you want to add ${totalItems} number of items ?`}
+        title={`Are you sure you want to add ${totalItems} inventory items ?`}
       />
       <Snackbar
         open={snackbarOpen}

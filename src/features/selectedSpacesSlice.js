@@ -3,16 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { CATEGORY_DATA } from "../features/inventorySlice";
 
 const createDefaultInventory = () => {
-  const inventory = {
-    ...Object.keys(CATEGORY_DATA).reduce((acc, category) => {
-      acc[category] = CATEGORY_DATA[category].map((item) => ({
-        ...item,
-        quantity: 0,
-      }));
-      return acc;
-    }, {}),
-  };
-  inventory.All = Object.values(CATEGORY_DATA)
+  const inventory = Object.keys(CATEGORY_DATA).reduce((acc, category) => {
+    acc[category] = structuredClone(CATEGORY_DATA[category]).map((item) => ({
+      ...item,
+      quantity: 0,
+    }));
+    return acc;
+  }, {});
+
+  inventory.All = structuredClone(Object.values(CATEGORY_DATA))
     .flat()
     .map((item) => ({
       ...item,
@@ -109,10 +108,10 @@ export const selectedSpacesSlice = createSlice({
           return;
       }
 
-      // Create spaces with empty inventory
+      // Create spaces with empty inventory using structuredClone for deep copy
       const spaces = Array.from({ length: count }, (_, i) => ({
         name: `${type === "Rooms" ? "Room" : type} ${i + 1}`,
-        inventory: createDefaultInventory(),
+        inventory: structuredClone(createDefaultInventory()),
       }));
 
       // Update the spaces array

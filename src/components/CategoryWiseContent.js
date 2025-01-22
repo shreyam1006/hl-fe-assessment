@@ -5,8 +5,15 @@ import { Tabs, Tab, Box, styled, Typography } from "@mui/material";
 import InventoryCard from "./InventoryCard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectInventory, updateQuantity } from "../features/inventorySlice";
-import { updateSpaceInventory } from "../features/selectedSpacesSlice";
+import {
+  selectDiningHalls,
+  selectDrawingHalls,
+  selectKitchens,
+  selectRooms,
+  updateSpaceInventory,
+} from "../features/selectedSpacesSlice";
 import { CATEGORY_DATA } from "../features/inventorySlice";
+import { selectTab } from "../features/tabSlice";
 
 const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -45,14 +52,36 @@ const CategoryWiseContent = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
+  const selectedTab = useSelector(selectTab);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
   const [activeTab, setActiveTab] = useState("All");
+  const isCategoriesTab = selectedTab === "Categories Wise";
 
   const globalInventory = useSelector(selectInventory);
-  const inventory = customInventory || globalInventory;
+  const roomsInventory = useSelector(selectRooms);
+  const kitchensInventory = useSelector(selectKitchens);
+  const diningHallsInventory = useSelector(selectDiningHalls);
+  const drawingHallsInventory = useSelector(selectDrawingHalls);
+
+  const specificInventory = () => {
+    if (spaceName.includes("Room")) {
+      return roomsInventory.find((room) => room.name === spaceName).inventory;
+    } else if (spaceName.includes("Kitchen")) {
+      return kitchensInventory.find((kitchen) => kitchen.name === spaceName)
+        .inventory;
+    } else if (spaceName.includes("Dining")) {
+      return diningHallsInventory.find((dining) => dining.name === spaceName)
+        .inventory;
+    } else if (spaceName.includes("Drawing")) {
+      return drawingHallsInventory.find((drawing) => drawing.name === spaceName)
+        .inventory;
+    }
+  };
+
+  const inventory = isCategoriesTab ? globalInventory : specificInventory();
 
   const categories = [
     { name: "All", count: inventory.All?.length || 0 },
@@ -71,14 +100,12 @@ const CategoryWiseContent = ({
   );
 
   const handleQuantityChange = (item, newQuantity) => {
-    // Always find the original category for the item
     const originalCategory = Object.keys(CATEGORY_DATA).find((cat) =>
       CATEGORY_DATA[cat].some((i) => i.title === item.title)
     );
     if (!originalCategory) return;
 
-    // For space inventory, update in original category
-    if (customInventory && spaceType && spaceName) {
+    if (!isCategoriesTab) {
       dispatch(
         updateSpaceInventory({
           type: spaceType,
@@ -89,7 +116,6 @@ const CategoryWiseContent = ({
         })
       );
     } else {
-      // For global inventory, update in active tab's category
       dispatch(
         updateQuantity({
           category: activeTab,
@@ -133,7 +159,6 @@ const CategoryWiseContent = ({
         />
       </div>
 
-      {/* Category Tabs - Only show when no search query */}
       {!searchQuery && (
         <Box sx={{ mb: 3, pl: 2 }}>
           <StyledTabs
@@ -212,6 +237,8 @@ const CategoryWiseContent = ({
                 onQuantityChange={(newQuantity) =>
                   handleQuantityChange(item, newQuantity)
                 }
+                spaceType={spaceType}
+                spaceName={spaceName}
               />
             ))
           )}

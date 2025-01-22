@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Typography, Stack, IconButton } from "@mui/material";
 import ConfirmDialog from "./ConfirmDialog";
 import { BLUE_COLOR } from "../utils/colorConstants";
+import { useSelector } from "react-redux";
+import { selectInventory } from "../features/inventorySlice";
 
 const cardStyle = {
   backgroundColor: "white",
@@ -22,10 +24,20 @@ const imageStyle = {
 const InventoryCard = ({
   title,
   imageUrl,
-  quantity,
+  quantity: propQuantity,
   category,
   onQuantityChange,
+  spaceType,
+  spaceName,
 }) => {
+  const inventory = useSelector(selectInventory);
+  const quantity =
+    spaceType && spaceName
+      ? propQuantity
+      : (category === "All"
+          ? inventory.All.find((item) => item.title === title)?.quantity
+          : inventory[category]?.find((item) => item.title === title)
+              ?.quantity) || 0;
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleIncrement = () => {

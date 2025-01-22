@@ -105,10 +105,10 @@ const InventoryAccordions = () => {
                 variant="subtitle1"
                 sx={{ color: BLUE_COLOR, fontSize: "10px" }}
               >
-                Item Added {count}
+                {count} {count === 1 ? "Item" : "Items"} Added
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails sx={{ px: 0 }}>
               <SpaceInventoryContent
                 spaceType={spaceType}
                 spaceName={spaceName}
