@@ -5,6 +5,7 @@ import {
   Box,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import InventoryBanner from "./InventoryBanner";
 import InventoryDrawer from "./InventoryDrawer";
@@ -20,13 +21,16 @@ import { selectInventory } from "../features/inventorySlice";
 import { selectCounters } from "../features/roomCounterSlice";
 import { setSelectedSpaces } from "../features/selectedSpacesSlice";
 import { BLUE_COLOR } from "../utils/colorConstants";
-import { TABS } from "../utils/constants";
+import { TABS, API } from "../utils/constants";
 
 const BottomNav = forwardRef((props, ref) => {
   const [value, setValue] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const selectedTab = useSelector(selectTab);
   const showInventory = useSelector(selectShowInventory);
@@ -40,11 +44,9 @@ const BottomNav = forwardRef((props, ref) => {
     (state) => state.selectedSpaces.drawingHalls
   );
 
-  // Get items based on current tab
   const uniqueInventoryItems =
     selectedTab === TABS.CategoriesWise
-      ? // For Categories tab, only show items from inventory slice
-        Object.entries(inventory).reduce((uniqueItems, [category, items]) => {
+      ? Object.entries(inventory).reduce((uniqueItems, [category, items]) => {
           items
             .filter((item) => item.quantity > 0)
             .forEach((item) => {
@@ -58,8 +60,7 @@ const BottomNav = forwardRef((props, ref) => {
             });
           return uniqueItems;
         }, [])
-      : // For Room Wise tab, only show items from selected spaces
-        (() => {
+      : (() => {
           const allSpaces = [
             ...rooms,
             ...kitchens,
@@ -68,7 +69,6 @@ const BottomNav = forwardRef((props, ref) => {
           ];
           const aggregatedItems = {};
 
-          // Only include items from spaces
           allSpaces.forEach((space) => {
             if (space?.inventory?.All) {
               space.inventory.All.forEach((item) => {
@@ -85,6 +85,7 @@ const BottomNav = forwardRef((props, ref) => {
 
           return Object.values(aggregatedItems);
         })();
+
   const totalItems = uniqueInventoryItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -98,7 +99,6 @@ const BottomNav = forwardRef((props, ref) => {
     if (selectedTab === TABS.RoomsWise) {
       dispatch(setShowInventory(true));
 
-      // Set selected spaces for each room type with proper format
       Object.entries(counters).forEach(([type, count]) => {
         if (count > 0) {
           dispatch(
@@ -112,6 +112,39 @@ const BottomNav = forwardRef((props, ref) => {
     }
   };
 
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API.BASE_URL}${API.ENDPOINTS.ORDER}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to submit order");
+      }
+
+      setSnackbarMessage(
+        data.message || `${totalItems} items added successfully!`
+      );
+      setSnackbarSeverity("success");
+      setConfirmDialogOpen(false);
+      setSnackbarOpen(true);
+      handleContinue();
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      setSnackbarMessage(error.message || "Failed to submit order");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <InventoryDrawer
@@ -122,11 +155,7 @@ const BottomNav = forwardRef((props, ref) => {
       <ConfirmDialog
         open={confirmDialogOpen}
         onCancel={() => setConfirmDialogOpen(false)}
-        onConfirm={() => {
-          setConfirmDialogOpen(false);
-          setSnackbarOpen(true);
-          handleContinue();
-        }}
+        onConfirm={handleConfirm}
         title={`Are you sure you want to add ${totalItems} inventory items ?`}
       />
       <Snackbar
@@ -137,10 +166,10 @@ const BottomNav = forwardRef((props, ref) => {
       >
         <Alert
           onClose={() => setSnackbarOpen(false)}
-          severity="success"
+          severity={snackbarSeverity}
           sx={{ width: "100%" }}
         >
-          {totalItems} items added successfully!
+          {snackbarMessage}
         </Alert>
       </Snackbar>
       <Paper
@@ -219,6 +248,10 @@ const BottomNav = forwardRef((props, ref) => {
               }}
               variant="contained"
               size="large"
+              disabled={isLoading}
+              startIcon={
+                isLoading && <CircularProgress size={20} color="inherit" />
+              }
               onClick={() => {
                 if (showInventory || selectedTab === TABS.CategoriesWise) {
                   setConfirmDialogOpen(true);
