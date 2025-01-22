@@ -18,14 +18,8 @@ import {
 import CategoryWiseContent from "./CategoryWiseContent";
 
 const SpaceInventoryContent = ({ spaceType, spaceName }) => {
-  const space = useSelector((state) => {
-    const type = spaceType.toLowerCase().replace(" ", "") + "s";
-    return state.selectedSpaces[type]?.find((s) => s.name === spaceName);
-  });
-
   return (
     <CategoryWiseContent
-      customInventory={space?.inventory}
       spaceType={spaceType}
       spaceName={spaceName}
       gridColumns={2}

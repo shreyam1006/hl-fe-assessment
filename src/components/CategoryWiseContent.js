@@ -44,13 +44,7 @@ const StyledTab = styled(Tab)({
   },
 });
 
-const CategoryWiseContent = ({
-  customInventory,
-  spaceType,
-  spaceName,
-  onInventoryUpdate,
-  gridColumns = 2,
-}) => {
+const CategoryWiseContent = ({ spaceType, spaceName, gridColumns = 2 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
   const selectedTab = useSelector(selectTab);
